@@ -19,22 +19,22 @@ func main() {
     goBot := irc.IRC(botNickname, botUsername)
     err := goBot.Connect(ircServer)
     if err != nil {
-        fmt.Println("Connection failed.")
-        return
+    fmt.Println("Connection failed.")
+    return
     }
 
     // On connect: Join channels in the list
     for i := 0; i < len(channels); i++ {
 		    goBot.Join(channels[i])
-	     }
+	  }
 
     // Message on join function (greet people when joining the channel + auto-op master)
     goBot.AddCallback("JOIN", func (e *irc.Event) {
-        if e.Nick == botNickname {
-			         goBot.Privmsg(e.Arguments[0], "Hi peeps. I am a NON friendly Go Bot undergoing development.")
-		           } else if e.Nick == botMaster {
-                 goBot.Notice(e.Nick,"Hello master. Auto-opping you now.")
-                 goBot.Mode(e.Arguments[0], "+o", e.Nick)
+      if e.Nick == botNickname {
+			     goBot.Privmsg(e.Arguments[0], "Hi peeps. I am a NON friendly Go Bot undergoing development.")
+		         } else if e.Nick == botMaster {
+               goBot.Notice(e.Nick,"Hello master. Auto-opping you now.")
+               goBot.Mode(e.Arguments[0], "+o", e.Nick)
                } else {
                  goBot.Privmsg(e.Arguments[0], "Hello " + e.Nick + "! Welcome to " + e.Arguments[0] + ".")
                }
@@ -130,12 +130,10 @@ func main() {
 
     // Handle VERSION & PING events
     goBot.AddCallback("CTCP_VERSION", func(e *irc.Event) {
-	        goBot.Notice(e.Nick, "Currently running GoBot version: " + botVersion)
-	        })
+      goBot.Notice(e.Nick, "Currently running GoBot version: " + botVersion)
+     })
     goBot.AddCallback("CTCP_PING", func(e *irc.Event) {
-          goBot.SendRawf("NOTICE %s :\x01%s\x01", e.Nick, e.Message())
-          })
-
+      goBot.SendRawf("NOTICE %s :\x01%s\x01", e.Nick, e.Message())
+     })
     goBot.Loop()
-
 } // THE END
