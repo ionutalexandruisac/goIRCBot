@@ -22,7 +22,7 @@ func main() {
         return
     }
 
-    // Message on join function
+    // Message on join function (greet people when joining the channel)
     goBot.Join(roomName)
     goBot.AddCallback("JOIN", func (e *irc.Event) {
       if e.Nick == botNickname {
@@ -32,11 +32,14 @@ func main() {
       }
     })
 
-    // Annoyingly repeat whatever the bot master types (test function - to be removed! ;-)
-    goBot.AddCallback("PRIVMSG", func (e *irc.Event) {
-         if e.Nick == botMaster {
-              goBot.Privmsg(roomName, e.Message())
-         }
+    // Recognizes the bot master (based on nickname for now) and replies to privmsg only to the bot master.
+   goBot.AddCallback("PRIVMSG", func (e *irc.Event) {
+        if e.Nick == botMaster && e.Arguments[0] == botNickname {
+          goBot.Notice(e.Nick, "Yes, master?")
+        } else if e.Nick != botMaster && e.Arguments[0] == botNickname {
+          goBot.Notice(e.Nick, "I refuse to listen to you! You're not my master.")
+        } else {
+        }
    })
 
    // Handle VERSION & PING events
@@ -47,6 +50,5 @@ func main() {
          goBot.SendRawf("NOTICE %s :\x01%s\x01", e.Nick, e.Message())
    })
 
-         goBot.Loop();
-
+   goBot.Loop()
 }
